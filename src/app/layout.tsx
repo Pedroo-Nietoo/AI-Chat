@@ -24,8 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <title>Nietu AI</title>
-        <link rel="icon" href="https://github.com/TryForefront.png" />
-        <meta name="description" content="Chat AI project built with Vercel SDK" />
+        <link rel="icon" href="https://github.com/OpenAI.png" />
+        <meta name="description" content="AI chat built using Vercel SDK, GitHub OAuth and OpenAI" />
         <meta name="author" content="Pedro Nieto" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen bg-slate-50 items-center justify-center`}>
