@@ -34,7 +34,7 @@ export default function ChatPage() {
       }
     };
     scrollToBottom();
-  }, [messages, error]); // Inclui o erro para também descer a scroll
+  }, [messages, error]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
