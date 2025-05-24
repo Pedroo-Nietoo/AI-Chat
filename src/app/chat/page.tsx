@@ -4,8 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
+import {
+  Card, CardHeader, CardTitle, CardDescription,
+  CardContent, CardFooter
+} from "../../components/ui/card";
+import {
+  Avatar, AvatarFallback, AvatarImage
+} from "../../components/ui/avatar";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Info } from "lucide-react";
@@ -15,7 +20,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<{ id: string; role: string; content: string }[]>([]);
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null); // Estado para armazenar a mensagem de erro
+  const [error, setError] = useState<string | null>(null);
 
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
@@ -29,7 +34,7 @@ export default function ChatPage() {
       }
     };
     scrollToBottom();
-  }, [messages]);
+  }, [messages, error]); // Inclui o erro para também descer a scroll
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -43,7 +48,7 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
-    setError(null); // Limpa o erro antes de enviar a nova mensagem
+    setError(null);
 
     try {
       const response = await fetch('/api/chat', {
@@ -54,7 +59,7 @@ export default function ChatPage() {
 
       if (!response.ok) {
         console.error("Erro na resposta do servidor:", response.statusText);
-        setError("Algo deu errado ao processar sua mensagem. Tente novamente."); // Define a mensagem de erro
+        setError("Algo deu errado ao processar sua mensagem. Tente novamente.");
         return;
       }
 
@@ -64,11 +69,11 @@ export default function ChatPage() {
         setMessages((prev) => [...prev, assistantMessage]);
       } else {
         console.error("Resposta inesperada do servidor:", data);
-        setError("Resposta inesperada do servidor. Tente novamente."); // Define a mensagem de erro
+        setError("Resposta inesperada do servidor. Tente novamente.");
       }
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
-      setError("Erro ao enviar mensagem. Verifique sua conexão e tente novamente."); // Define a mensagem de erro
+      setError("Erro ao enviar mensagem. Verifique sua conexão e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -82,11 +87,9 @@ export default function ChatPage() {
     <Card className="w-[600px]">
       <CardHeader>
         <CardTitle>Chat AI</CardTitle>
-        {session?.user ? (
-          <CardDescription>Welcome, {session.user.name || 'Guest'}! Ask me anything!</CardDescription>
-        ) : (
-          <CardDescription>Welcome, Guest! Please log in to start chatting.</CardDescription>
-        )}
+        <CardDescription>
+          {session?.user ? `Welcome, ${session.user.name || 'Guest'}! Ask me anything!` : 'Welcome, Guest! Please log in to start chatting.'}
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -95,8 +98,7 @@ export default function ChatPage() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-3 text-slate-600 text-sm mb-4 ${message.role === "user" ? "justify-end items-center" : ""
-                  }`}
+                className={`flex gap-3 text-slate-600 text-sm mb-4 ${message.role === "user" ? "justify-end items-center" : ""}`}
               >
                 {message.role === "assistant" && (
                   <Avatar>
@@ -109,9 +111,9 @@ export default function ChatPage() {
                     {message.role === "user" ? (session?.user.name || 'Guest') : "Nietu AI"}
                   </span>
                   {message.role === "assistant" ? (
-                    <p className="pb-6">{message.content}</p>
+                    <p className="pb-6" style={{ borderTopLeftRadius: 0 }}>{message.content}</p>
                   ) : (
-                    <p className="rounded-sm bg-[#F1F5F9] w-fit text-left p-2">{message.content}</p>
+                    <p className="rounded-md bg-[#F1F5F9] w-fit text-left p-2" style={{ borderTopRightRadius: 0 }}>{message.content}</p>
                   )}
                 </div>
                 {message.role === "user" && (
@@ -129,6 +131,7 @@ export default function ChatPage() {
                 )}
               </div>
             ))}
+
             {loading && (
               <div className="flex items-center space-x-4">
                 <Skeleton className="h-12 w-12 rounded-full" />
@@ -138,13 +141,23 @@ export default function ChatPage() {
                 </div>
               </div>
             )}
+
+            {error && (
+              <div className="flex gap-3 text-slate-600 text-sm mb-4">
+                <Avatar className="border border-solid border-black">
+                  <AvatarFallback>AI</AvatarFallback>
+                  <AvatarImage src="https://github.com/OpenAI.png" />
+                </Avatar>
+                <div className="leading-relaxed flex flex-col">
+                  <span className="block font-bold text-slate-800">Nietu AI</span>
+                  <div className="flex items-center gap-2 bg-red-100 text-red-600 p-3 rounded-md w-fit max-w-[400px] text-sm" style={{ borderTopLeftRadius: 0 }}>
+                    <Info className="w-4 h-4 text-red-500" />
+                    <span>{error}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          {error &&
-            <div className="text-red-500 bg-red-300 rounded p-4 w-[400px] text-sm mt-4 flex items-center gap-3">
-              <Info className="text-red-500" />
-              <p className="">{error}</p>
-            </div>
-          }
         </ScrollArea>
       </CardContent>
 
