@@ -171,7 +171,7 @@ export default function ChatPage() {
               <div className="flex gap-3 text-slate-600 text-sm mb-4">
                 <Avatar className="border border-solid border-black">
                   <AvatarFallback>AI</AvatarFallback>
-                  <AvatarImage src="https://github.com/OpenAI.png" />
+                  <AvatarImage src="https://github.com/google-gemini.png" />
                 </Avatar>
                 <div className="leading-relaxed flex flex-col">
                   <span className="block font-bold text-slate-800">Nietu AI</span>
